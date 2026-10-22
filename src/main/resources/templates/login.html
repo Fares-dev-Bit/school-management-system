@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="fr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="'Connexion — ' + ${appName}">Connexion — School Management System</title>
+
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+          darkMode: 'class',
+          theme: {
+            extend: {
+              fontFamily: {
+                body: ['Inter', 'sans-serif'],
+              },
+              colors: {
+                brand: {
+                  DEFAULT: '#B3423A',
+                  50:  '#FBEEEC',
+                  100: '#F6DBD7',
+                  600: '#B3423A',
+                  700: '#98342D',
+                }
+              }
+            }
+          }
+        }
+    </script>
+
+    <!-- Apply saved/preferred theme before paint to avoid a flash -->
+    <script>
+        (function () {
+          var saved = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (saved === 'dark' || (!saved && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        })();
+    </script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        input:-webkit-autofill {
+          transition: background-color 9999s ease-in-out 0s;
+        }
+    </style>
+</head>
+
+<body class="min-h-screen w-full bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-body transition-colors">
+
+<!-- thin brand rule across the top, matching the dashboard header -->
+<div class="h-[3px] w-full bg-brand"></div>
+
+<!-- theme toggle -->
+<button
+        onclick="toggleTheme()"
+        aria-label="Toggle theme"
+        class="fixed top-5 right-5 z-20 inline-flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
+    <svg id="iconMoon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+    <svg id="iconSun" xmlns="http://www.w3.org/2000/svg" class="hidden h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+    </svg>
+</button>
+
+<main class="flex min-h-screen items-center justify-center px-4 py-10">
+    <div class="w-full max-w-md">
+
+        <!-- brand header, matching the app's top bar -->
+        <div class="flex flex-col items-center text-center mb-8">
+            <div class="h-14 w-14 rounded-full border-2 border-brand bg-brand-50 dark:bg-zinc-900 flex items-center justify-center mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <circle cx="12" cy="12" r="8"></circle>
+                    <path d="M12 8v4l3 2"></path>
+                </svg>
+            </div>
+            <h1 class="text-xl font-bold tracking-tight" th:text="${appName}">School Management System</h1>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5" th:text="${appSubtitle}">Candidate Registry</p>
+        </div>
+
+        <!-- alerts -->
+        <div th:if="${param.error}"
+             class="mb-3 flex items-center gap-2 rounded-md border border-red-200 dark:border-red-900/60 bg-red-50 dark:bg-red-950/40 px-3 py-2 text-xs text-red-700 dark:text-red-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"></circle>
+                <line x1="12" y1="8" x2="12" y2="13"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <span>Identifiant ou mot de passe incorrect.</span>
+        </div>
+
+        <div th:if="${param.logout}"
+             class="mb-3 flex items-center gap-2 rounded-md border border-emerald-200 dark:border-emerald-900/60 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 6L9 17l-5-5"></path>
+            </svg>
+            <span>Déconnecté avec succès.</span>
+        </div>
+
+        <!-- login card, styled like the dashboard's bordered stat/table panels -->
+        <div class="rounded-2xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-6 sm:p-8">
+            <p class="text-xs font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500 mb-6">
+                Sign in to continue
+            </p>
+
+            <form method="post" th:action="@{/login}" class="space-y-4">
+
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">
+                        Username
+                    </label>
+                    <div class="relative">
+              <span class="absolute inset-y-0 left-3.5 flex items-center text-zinc-400 dark:text-zinc-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+              </span>
+                        <input
+                                type="text"
+                                id="username"
+                                name="username"
+                                required
+                                autofocus
+                                placeholder="e.g. m.achour"
+                                class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 py-2.5 pl-10 pr-3 text-sm placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition"
+                        >
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="password" class="block text-xs font-medium text-zinc-500 dark:text-zinc-400">
+                            Password
+                        </label>
+                        <a href="#" class="text-xs font-medium text-brand hover:text-brand-700 transition">Forgot password?</a>
+                    </div>
+                    <div class="relative">
+              <span class="absolute inset-y-0 left-3.5 flex items-center text-zinc-400 dark:text-zinc-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="11" width="16" height="9" rx="2"></rect>
+                  <path d="M8 11V7a4 4 0 0 1 8 0v4"></path>
+                </svg>
+              </span>
+                        <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                required
+                                placeholder="••••••••"
+                                class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 py-2.5 pl-10 pr-10 text-sm placeholder-zinc-400 dark:placeholder-zinc-600 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition"
+                        >
+                        <button type="button" onclick="togglePassword()" class="absolute inset-y-0 right-3.5 flex items-center text-zinc-400 dark:text-zinc-500 hover:text-zinc-600 dark:hover:text-zinc-300 transition">
+                            <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Remember me -->
+                <label class="flex items-center gap-2 cursor-pointer select-none text-xs text-zinc-500 dark:text-zinc-400 pt-1">
+                    <input type="checkbox" name="remember-me" class="h-3.5 w-3.5 rounded border-zinc-300 dark:border-zinc-700 text-brand focus:ring-brand/40">
+                    Remember me on this device
+                </label>
+
+                <!-- Submit -->
+                <button
+                        type="submit"
+                        class="w-full rounded-lg bg-brand hover:bg-brand-700 text-white font-semibold text-sm py-2.5 mt-2 transition">
+                    Sign in
+                </button>
+
+            </form>
+        </div>
+
+        <div class="flex items-center justify-center gap-1.5 mt-6 text-xs text-zinc-400 dark:text-zinc-500">
+            <span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+            <span th:text="'API connected · ' + ${appName}">API connected · School Management System</span>
+        </div>
+
+    </div>
+</main>
+
+<script>
+    function togglePassword() {
+      const pwd = document.getElementById('password');
+      const eye = document.getElementById('eyeIcon');
+      if (pwd.type === 'password') {
+        pwd.type = 'text';
+        eye.innerHTML = '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.6 18.6 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>';
+      } else {
+        pwd.type = 'password';
+        eye.innerHTML = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+      }
+    }
+
+    function syncToggleIcon() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.getElementById('iconMoon').classList.toggle('hidden', isDark);
+      document.getElementById('iconSun').classList.toggle('hidden', !isDark);
+    }
+
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.classList.toggle('dark');
+      localStorage.setItem('theme', html.classList.contains('dark') ? 'dark' : 'light');
+      syncToggleIcon();
+    }
+
+    syncToggleIcon();
+</script>
+
+</body>
+</html>

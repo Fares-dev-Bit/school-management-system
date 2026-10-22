@@ -1,0 +1,49 @@
+# Maven
+target/
+*.jar
+*.war
+*.ear
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.classpath
+*.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Build output
+dist/
+build/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Maven wrapper
+.mvn/wrapper/maven-wrapper.jar
+
+# Test reports
+target/surefire-reports/
+target/failsafe-reports/
+
+# H2 Database files (if using file-based)
+*.mv.db
+*.trace.db
